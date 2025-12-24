@@ -21,8 +21,7 @@ rm -rf "$USER_HOME/.librewolf" /etc/librewolf 2>/dev/null || true
 apt-get update -y
 apt-get install -y curl gnupg
 curl -s "https://deb.librewolf.net/key.gpg" | gpg --dearmor > /usr/share/keyrings/librewolf.gpg
-echo "deb [signed-by=/usr/share/keyrings/librewolf.gpg] http://deb.librewolf.net ubuntu main" > /etc/apt/sources.list.d/librewolf.list
-
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/librewolf.gpg] http://deb.librewolf.net $(lsb_release -cs) main" > /etc/apt/sources.list.d/librewolf.list
 apt-get update -y
 apt-get install -y librewolf
 
