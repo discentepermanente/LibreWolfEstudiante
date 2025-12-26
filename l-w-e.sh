@@ -1,169 +1,643 @@
+
 #!/bin/bash
-# Script LibreWolf
+# Script LibreWolf - Método INDESTRUCTIBLE
 
-clear
-REAL_USER=$(logname 2>/dev/null || echo $SUDO_USER)
-USER_HOME=$(getent passwd $REAL_USER | cut -d: -f6)
+# Función para eliminar navegadores firefox y librewolf
+eliminar_navegadores() {
+    echo "🧹 ELIMINACIÓN TOTAL - TODOS LOS RASTROS"
+    echo "========================================="
+    
+    # 0. DETENER PROCESOS (AGREGAR ESTO)
+    echo "0. 🛑 Deteniendo procesos en ejecución..."
+    # Solo matar procesos con nombres de binarios específicos
+    pkill -x firefox 2>/dev/null || true  # -x: nombre exacto
+    pkill -x librewolf 2>/dev/null || true
+    # Matar procesos hijos de navegadores (sin afectar bash)
+    pkill -P $(pgrep -x firefox 2>/dev/null) 2>/dev/null || true
+    pkill -P $(pgrep -x librewolf 2>/dev/null) 2>/dev/null || true
+    sleep 2
+    
+    
+    declare -A navegadores=(
+        [firefox]="org.mozilla.firefox"
+        [librewolf]="org.librewolf"
+    )
+    
+    # 1. DESINSTALAR PAQUETES
+    echo "1. 🗑️  Desinstalando paquetes..."
+    
+    declare -A metodos_disponibles
+    command -v apt >/dev/null 2>&1 && metodos_disponibles[apt]=1
+    command -v snap >/dev/null 2>&1 && metodos_disponibles[snap]=1
+    command -v flatpak >/dev/null 2>&1 && metodos_disponibles[flatpak]=1
 
-if [ "$EUID" -ne 0 ]; then 
-  echo "Ejecuta con: sudo bash $0"
-  exit 1
-fi
+    for nav in "${!navegadores[@]}"; do
+        echo "   🔍 ${nav^}"
+        local encontrado=0
+        
+        for metodo in "${!metodos_disponibles[@]}"; do
+            case $metodo in
+                apt)
+                    if dpkg -l | grep -qi "$nav"; then
+                        echo "     🗑️  APT"
+                        [[ "$nav" == "firefox" ]] && \
+                            sudo apt purge firefox firefox-esr firefox-locale-* -y >/dev/null 2>&1 || \
+                            sudo apt purge "$nav"* -y >/dev/null 2>&1
+                        encontrado=1
+                    fi
+                    ;;
+                snap)
+                    if snap list | grep -qi "$nav"; then
+                        echo "     🗑️  Snap"
+                        sudo snap remove --purge "$nav" >/dev/null 2>&1
+                        encontrado=1
+                    fi
+                    ;;
+                flatpak)
+                    if flatpak list | grep -qi "${navegadores[$nav]}"; then
+                        echo "     🗑️  Flatpak"
+                        flatpak uninstall --delete-data "${navegadores[$nav]}" -y >/dev/null 2>&1
+                        encontrado=1
+                    fi
+                    ;;
+            esac
+        done
+        [[ $encontrado -eq 0 ]] && echo "     ✅ No instalado"
+    done
+    
+    # 2. LIMPIAR CONFIGURACIONES DE USUARIO
+    echo ""
+    echo "2. 🗂️  Eliminando configuraciones de usuario..."
+    
+    local REAL_USER="${SUDO_USER:-$USER}"
+    local REAL_HOME=""
+    
+    if [[ "$REAL_USER" == "root" ]]; then
+        REAL_USER=$(ls /home | head -1)
+    fi
+    
+    if [[ -n "$REAL_USER" ]]; then
+        REAL_HOME=$(getent passwd "$REAL_USER" | cut -d: -f6)
+    fi
+    
+    if [[ -z "$REAL_HOME" ]] || [[ ! -d "$REAL_HOME" ]]; then
+        if [[ "$REAL_USER" != "root" ]] && [[ -d "/home/$REAL_USER" ]]; then
+            REAL_HOME="/home/$REAL_USER"
+        else
+            REAL_HOME="/home/$(ls /home | head -1)"
+        fi
+    fi
+    
+    echo "   👤 Usuario: $REAL_USER"
+    echo "   🏠 Home: $REAL_HOME"
+    
+    # Eliminar TODAS las carpetas y archivos del usuario
+    local carpetas_usuario=(
+        "$REAL_HOME/.librewolf"
+        "$REAL_HOME/.librewolf_logs"
+        "$REAL_HOME/.librewolf_educational_mode"
+        "$REAL_HOME/.librewolf_manual_config.sh"
+        "$REAL_HOME/.librewolf*"
+        "$REAL_HOME/.mozilla"
+        "$REAL_HOME/.cache/mozilla"
+        "$REAL_HOME/.cache/librewolf"
+        "$REAL_HOME/.config/librewolf"
+        "$REAL_HOME/.config/firefox"
+        "$REAL_HOME/.local/share/applications/librewolf*"
+        "$REAL_HOME/.local/share/applications/firefox*"
+        "$REAL_HOME/.local/share/icons/librewolf*"
+        "$REAL_HOME/.local/share/icons/firefox*"
+        "$REAL_HOME/snap/librewolf"
+        "$REAL_HOME/snap/firefox"
+        "$REAL_HOME/Desktop/librewolf*.desktop"
+        "$REAL_HOME/Desktop/firefox*.desktop"
+        "$REAL_HOME/.gnome/apps/librewolf*"
+        "$REAL_HOME/.gnome/apps/firefox*"
+    )
+    
+    for item in "${carpetas_usuario[@]}"; do
+        # Expande wildcards si existen
+        for elemento in $item; do
+            if [[ -e "$elemento" ]]; then
+                echo "     🗑️  $(basename "$elemento")"
+                rm -rf "$elemento" >/dev/null 2>&1
+            fi
+        done
+    done
+    
+    # 3. LIMPIAR ARCHIVOS DEL SISTEMA (APT/DPKG)
+    echo ""
+    echo "3. 🗃️  Limpiando archivos del sistema..."
+    
+    # Archivos de repositorio APT
+    local archivos_sistema=(
+        "/etc/apt/sources.list.d/extrepo_librewolf*"
+        "/usr/share/keyrings/librewolf*"
+        "/var/cache/apt/archives/librewolf*"
+        "/var/lib/apt/lists/repo.librewolf.net*"
+        "/var/lib/extrepo/keys/librewolf*"
+        "/usr/lib/firefox*"
+        "/usr/lib/librewolf*"
+        "/opt/firefox*"
+        "/opt/librewolf*"
+        "/usr/share/applications/firefox*.desktop"
+        "/usr/share/applications/librewolf*.desktop"
+        "/usr/local/bin/firefox"
+        "/usr/local/bin/librewolf"
+        "/var/lib/snapd/desktop/applications/firefox*"
+        "/var/lib/snapd/desktop/applications/librewolf*"
+        "/usr/share/doc/firefox*"
+        "/usr/share/doc/librewolf*"
+        "/usr/share/man/man1/firefox*"
+        "/usr/share/man/man1/librewolf*"
+        "/root/.librewolf_manual_config.sh"
 
-echo "=== INSTALACIÓN DE LIBREWOLF ==="
+    )
+    
+    for archivo in "${archivos_sistema[@]}"; do
+        for elemento in $archivo; do
+            if [[ -e "$elemento" ]]; then
+                echo "     🗑️  $(basename "$elemento")"
+                sudo rm -rf "$elemento" >/dev/null 2>&1
+            fi
+        done
+    done
+    
+    # 4. LIMPIAR CACHÉ Y DEPENDENCIAS
+    echo ""
+    echo "4. 🧽 Limpieza final del sistema..."
+    
+    if command -v apt >/dev/null 2>&1; then
+        sudo apt autoremove --purge -y >/dev/null 2>&1
+        sudo apt autoclean >/dev/null 2>&1
+        sudo apt clean >/dev/null 2>&1
+    fi
+    
+    if command -v flatpak >/dev/null 2>&1; then
+        flatpak remove --unused -y >/dev/null 2>&1
+    fi
+    
+    # 5. ACTUALIZAR BASES DE DATOS DEL SISTEMA
+    echo ""
+    echo "5. 🔄 Actualizando bases de datos..."
+    
+    # Actualizar locate database
+    if command -v updatedb >/dev/null 2>&1; then
+        sudo updatedb >/dev/null 2>&1
+    fi
+    
+    # Actualizar menús de aplicaciones
+    if command -v update-desktop-database >/dev/null 2>&1; then
+        update-desktop-database "$REAL_HOME/.local/share/applications" >/dev/null 2>&1
+    fi
+    
+    # 6. VERIFICACIÓN FINAL
+    echo ""
+    echo "6. 🔍 Verificación final..."
+    
+    local restos_encontrados=0
+    
+    # Buscar cualquier rastro con locate
+    if command -v locate >/dev/null 2>&1; then
+        echo "   🔎 Buscando con locate:"
+        local resultados=$(locate -i librewolf firefox 2>/dev/null | grep -v "/proc/\|/sys/")
+        
+        if [[ -n "$resultados" ]]; then
+            echo "     ⚠️  Se encontraron algunos archivos residuales:"
+            echo "$resultados" | head -10 | while read -r linea; do
+                echo "       • $(basename "$linea")"
+            done
+            if [[ $(echo "$resultados" | wc -l) -gt 10 ]]; then
+                echo "       ... y más"
+            fi
+            restos_encontrados=1
+        else
+            echo "     ✅ No se encontraron archivos residuales"
+        fi
+    fi
+    
+    # Verificar con dpkg
+    echo "   📦 Verificando paquetes:"
+    if dpkg -l | grep -qi "firefox\|librewolf"; then
+        echo "     ⚠️  ¡AÚN HAY PAQUETES INSTALADOS!"
+        restos_encontrados=1
+    else
+        echo "     ✅ No hay paquetes instalados"
+    fi
+    
+    echo ""
+    echo "========================================="
+    
+    if [[ $restos_encontrados -eq 0 ]]; then
+        echo "✅ ¡ELIMINACIÓN COMPLETA EXITOSA!"
+        echo "💡 Se eliminaron TODOS los rastros de Firefox y LibreWolf."
+    else
+        echo "⚠️  Eliminación casi completa. Algunos archivos residuales persisten."
+        echo "   Pueden ser archivos del sistema o logs que son seguros."
+    fi
+    
+    echo ""
+    echo "🔄 Para verificar manualmente:"
+    echo "   locate librewolf firefox | grep -v '/proc/\|/sys/'"
+    echo "   dpkg -l | grep -i 'firefox\|librewolf'"
+}
 
-# 1. LIMPIEZA TOTAL
-pkill -9 librewolf 2>/dev/null || true
-apt-get purge -y librewolf* 2>/dev/null || true
-rm -rf "$USER_HOME/.librewolf" /etc/librewolf 2>/dev/null || true
 
-# 2. INSTALACIÓN CORRECTA
-apt-get update -y
-apt-get install -y curl gnupg
-curl -s "https://deb.librewolf.net/key.gpg" | gpg --dearmor > /usr/share/keyrings/librewolf.gpg
-echo "deb [signed-by=/usr/share/keyrings/librewolf.gpg] http://deb.librewolf.net ubuntu main" > /etc/apt/sources.list.d/librewolf.list
-apt-get update -y
-apt-get install -y librewolf
 
-# 3. POLÍTICAS CON TODAS LAS EXTENSIONES Y BLOQUEO DE BUSCADORES
-mkdir -p /etc/librewolf/policies
-cat > /etc/librewolf/policies/policies.json << 'POLICY_EOF'
+# FUNCIÓN PARA INSTALAR LIBREWOLF
+instalar_librewolf() {
+    echo
+    echo
+    echo "🚀 Iniciando instalación de LibreWolf"
+    echo "====================================="
+    
+    # 1. Actualizar repositorios
+    sudo apt update >/dev/null 2>&1 && echo "✓ Repositorios actualizados"
+    
+    # 2. Instalar extrepo si no existe (estilo ternario)
+    command -v extrepo >/dev/null 2>&1 \
+    && echo "✓ extrepo ya disponible" \
+    || { echo "📥 Instalando extrepo..."; apt -y install extrepo 2>/dev/null; }
+    
+    # 3. Habilitar repositorio
+    echo "🔧 Configurando repositorio..."
+    extrepo enable librewolf >/dev/null 2>&1 \
+    && echo "✓ Repositorio habilitado" \
+    || echo "⚠️  Usando repositorios existentes"
+    
+    # 4. Instalar LibreWolf
+    echo "📦 Instalando LibreWolf..."
+    sudo apt update >/dev/null 2>&1 \
+    && apt -y install librewolf >/dev/null 2>&1 \
+    && echo "✅ LibreWolf instalado correctamente" \
+    || echo "❌ Error al instalar LibreWolf"
+    
+    echo "====================================="
+}
+
+
+#  POLÍTICAS CON TODAS LAS EXTENSIONES Y BLOQUEO DE BUSCADORES
+politicas() {
+    echo "🔧 RESTAURANDO POLÍTICAS ORIGINALES"
+    echo "======================================"
+    
+    local POLICY_FILE="/usr/share/librewolf/distribution/policies.json"
+    
+    sudo mkdir -p "$(dirname "$POLICY_FILE")"
+    
+    sudo tee "$POLICY_FILE" > /dev/null << 'POLICY_EOF'
 {
   "policies": {
     "DisableTelemetry": true,
-    "OverrideFirstRunPage": "https://duckduckgo.com/?t=ffab&kl=es-es",
+    "DisableFirefoxStudies": true,
+    "DisablePocket": true,
+    "DisableFirefoxAccounts": true,
+    "DisableFormHistory": true,
     "DisableSafeMode": true,
-    "DisablePrivateBrowsing": true,
+    "DisablePrivateBrowsing": false,
+    "browser.aboutwelcome.enabled": false,
+
+    "DisableDeveloperTools": false,
+    "DisableFirefoxScreenshots": true,
+    "DisablePasswordManager": true,
+    "DisableSetDesktopBackground": true,
+    "DisableForgetButton": true,
+    "DisableFeedbackCommands": true,
+    "DisableProfileImport": true,
+    "DisableProfileRefresh": true,
+    "DisableAppUpdate": false,
+    "DisableBuiltinPDFViewer": true,
+    "DisableMasterPasswordCreation": true,
+    
+    "OverrideFirstRunPage": "",
+    "OverridePostUpdatePage": "",
+    "NewTabPage": false,
+
+    "DNSOverHTTPS": {
+      "Enabled": true,
+      "ProviderURL": "https://mozilla.cloudflare-dns.com/dns-query",
+      "Locked": true
+    },
+
+    "Homepage": {
+      "URL": "https://duckduckgo.com/?t=ffab&kl=es-sv",
+      "Locked": true,
+      "StartPage": "homepage",
+      "Additional": ["https://duckduckgo.com/?t=ffab&kl=es-sv"]
+    },
+
     "SearchEngines": {
       "Default": "DuckDuckGo",
       "PreventInstalls": true,
-      "Remove": ["Google", "Bing", "Amazon.com", "eBay", "Twitter", "Yahoo", "Wikipedia", "YouTube"]
+      "Remove": [
+        "Google", "Bing", "Amazon.com", "eBay", "Twitter", "Yahoo", "DuckDuckGo HTML", "DuckDuckGo Lite"
+      ],
+      "Add": [
+        {
+          "Name": "DuckDuckGo",
+          "URL": "https://duckduckgo.com/?t=ffab&kl=es-sv&q={searchTerms}",
+          "Method": "GET",
+          "IconURL": "https://duckduckgo.com/favicon.ico",
+          "Suggested": true,
+          "Default": true
+        }
+      ],
+      "Locked": true
     },
-"Extensions": {
-  "Install": [
-    "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi",
-    "https://addons.mozilla.org/firefox/downloads/latest/darkreader/latest.xpi",
-    "https://addons.mozilla.org/firefox/downloads/latest/privacy-badger17/latest.xpi",
-    "https://addons.mozilla.org/firefox/downloads/file/4641717/ruffle_rs-0.2.0.25347.xpi",
-    "https://addons.mozilla.org/firefox/downloads/file/2994462/kl-1.5.4.xpi"
-  ],
-  "Locked": [
-    "uBlock0@raymondhill.net",
-    "addon@darkreader.org",
-    "jid1-MnnxcxisBPnSXQ@jetpack",
-    "{b5501fd1-7084-45c5-9aa6-567c2fcf5dc6}",
-    "{b9e5d196-6a3b-48b2-9b2b-08e661d144c5}"
-  ]
-},
+
+    "Permissions": {
+      "Camera": {
+        "BlockNewRequests": true,
+        "Locked": true
+      },
+      "Microphone": {
+        "BlockNewRequests": true,
+        "Locked": true
+      },
+      "Location": {
+        "BlockNewRequests": true,
+        "Locked": true
+      },
+      "Notifications": {
+        "BlockNewRequests": true,
+        "Locked": true
+      },
+      "Autoplay": {
+        "Default": "block-audio",
+        "Locked": true
+      }
+    },
+
+    "Cookies": {
+      "Allow": [],
+      "Block": ["http://*", "https://*"],
+      "Default": "reject-tracker",
+      "AcceptThirdParty": "never",
+      "ExpireAtSessionEnd": true,
+      "RejectTracker": true,
+      "Locked": true
+    },
+
+    "Extensions": {
+      "Install": [
+        "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi",
+        "https://addons.mozilla.org/firefox/downloads/latest/darkreader/latest.xpi",
+        "https://addons.mozilla.org/firefox/downloads/latest/privacy-badger17/latest.xpi",
+        "https://addons.mozilla.org/firefox/downloads/file/4641717/ruffle_rs-0.2.0.25347.xpi",
+        "https://addons.mozilla.org/firefox/downloads/file/2994462/kl-1.5.4.xpi",
+        "https://addons.mozilla.org/firefox/downloads/latest/canvasblocker/latest.xpi"
+      ],
+      "Locked": [
+        "uBlock0@raymondhill.net",
+        "addon@darkreader.org",
+        "jid1-MnnxcxisBPnSXQ@jetpack",
+        "{b5501fd1-7084-45c5-9aa6-567c2fcf5dc6}",
+        "{b9e5d196-6a3b-48b2-9b2b-08e661d144c5}",
+        "canvasblocker@kkapsner.de"
+      ],
+      "Uninstall": [
+        "screenshots@mozilla.org",
+        "webcompat@mozilla.org",
+        "formautofill@mozilla.org"
+      ],
+      "InstallDefault": false,
+      "AllowedTypes": ["extension"]
+    },
+
+    "SanitizeOnShutdown": {
+      "Cache": true,
+      "Cookies": true,
+      "Downloads": true,
+      "FormData": true,
+      "History": true,
+      "Sessions": true,
+      "SiteSettings": true,
+      "OfflineApps": true,
+      "Locked": true
+    },
+
     "Preferences": {
-      "intl.locale.requested": "es-ES",
-      "browser.aboutwelcome.enabled": false,
-      "xpinstall.enabled": false,
-      "extensions.update.enabled": false,
-      "browser.search.widget.inNavBar": false
+      "intl.locale.requested": { "Value": "es-ES", "Status": "locked" },
+      "browser.search.region": { "Value": "SV", "Status": "locked" },
+      "browser.search.defaultenginename": { "Value": "DuckDuckGo", "Status": "locked" },
+      "keyword.URL": { "Value": "https://duckduckgo.com/?t=ffab&kl=es-sv&q=", "Status": "locked" },
+      "intl.accept_languages": { "Value": "es-SV, es-ES, es, en-US, en", "Status": "locked" },
+      
+      "xpinstall.enabled": { "Value": false, "Status": "locked" },
+      "xpinstall.whitelist.required": { "Value": true, "Status": "locked" },
+      "extensions.update.enabled": { "Value": true, "Status": "locked" },
+      "extensions.getAddons.showPane": { "Value": false, "Status": "locked" },
+      "extensions.htmlaboutaddons.recommendations.enabled": { "Value": false, "Status": "locked" },
+      
+      "browser.search.widget.inNavBar": { "Value": false, "Status": "locked" },
+      "browser.newtabpage.enabled": { "Value": false, "Status": "locked" },
+      "browser.newtabpage.activity-stream.showSponsored": { "Value": false, "Status": "locked" },
+      "browser.newtabpage.activity-stream.showSponsoredTopSites": { "Value": false, "Status": "locked" },
+      "browser.newtabpage.activity-stream.default.sites": { "Value": "", "Status": "locked" },
+      
+      "privacy.sanitize.sanitizeOnShutdown": { "Value": true, "Status": "locked" },
+      "privacy.sanitize.timeSpan": { "Value": 0, "Status": "locked" },
+      "privacy.sanitize.sanitizeOnShutdown.pending": { "Value": true, "Status": "locked" },
+      
+      "privacy.clearOnShutdown.history": { "Value": true, "Status": "locked" },
+      "privacy.clearOnShutdown.sessions": { "Value": true, "Status": "locked" },
+      "privacy.clearOnShutdown.cookies": { "Value": true, "Status": "locked" },
+      "privacy.clearOnShutdown.downloads": { "Value": true, "Status": "locked" },
+      "privacy.clearOnShutdown.cache": { "Value": true, "Status": "locked" },
+      "privacy.clearOnShutdown.formdata": { "Value": true, "Status": "locked" },
+      "privacy.clearOnShutdown.openWindows": { "Value": true, "Status": "locked" },
+      "privacy.clearOnShutdown.offlineApps": { "Value": true, "Status": "locked" },
+      "privacy.clearOnShutdown.siteSettings": { "Value": true, "Status": "locked" },
+      
+      "browser.tabs.closeWindowWithLastTab": { "Value": false, "Status": "locked" },
+      "browser.bookmarks.max_backups": { "Value": 0, "Status": "locked" },
+      "browser.disableResetPrompt": { "Value": true, "Status": "locked" },
+      "browser.uidensity": { "Value": 1, "Status": "locked" },
+      
+      "dom.disable_open_during_load": { "Value": false, "Status": "locked" },
+      "dom.disable_window_flip": { "Value": false, "Status": "locked" },
+      "dom.disable_window_move_resize": { "Value": false, "Status": "locked" },
+      "dom.event.contextmenu.enabled": { "Value": true, "Status": "locked" },
+      "dom.popup_maximum": { "Value": 20, "Status": "locked" },
+      
+      "network.cookie.cookieBehavior": { "Value": 4, "Status": "locked" },
+      "network.cookie.lifetimePolicy": { "Value": 2, "Status": "locked" },
+      "network.http.referer.defaultPolicy": { "Value": 2, "Status": "locked" },
+      "network.http.referer.defaultPolicy.pbmode": { "Value": 2, "Status": "locked" },
+      "network.http.referer.trimmingPolicy": { "Value": 2, "Status": "locked" },
+      "network.IDN_show_punycode": { "Value": false, "Status": "locked" },
+      
+      "pdfjs.disabled": { "Value": true, "Status": "locked" },
+      "pdfjs.enableWebGL": { "Value": false, "Status": "locked" },
+      
+      "toolkit.telemetry.archive.enabled": { "Value": false, "Status": "locked" },
+      "toolkit.telemetry.bhrPing.enabled": { "Value": false, "Status": "locked" },
+      "toolkit.telemetry.enabled": { "Value": false, "Status": "locked" },
+      "toolkit.telemetry.firstShutdownPing.enabled": { "Value": false, "Status": "locked" },
+      "toolkit.telemetry.hybridContent.enabled": { "Value": false, "Status": "locked" },
+      "toolkit.telemetry.newProfilePing.enabled": { "Value": false, "Status": "locked" },
+      "toolkit.telemetry.prompted": { "Value": 2, "Status": "locked" },
+      "toolkit.telemetry.rejected": { "Value": true, "Status": "locked" },
+      "toolkit.telemetry.server": { "Value": "", "Status": "locked" },
+      "toolkit.telemetry.shutdownPingSender.enabled": { "Value": false, "Status": "locked" },
+      "toolkit.telemetry.unified": { "Value": false, "Status": "locked" },
+      "toolkit.telemetry.updatePing.enabled": { "Value": false, "Status": "locked" },
+      
+      "webgl.disabled": { "Value": false, "Status": "locked" },
+      "webgl.enable-webgl2": { "Value": true, "Status": "locked" },
+      "webgl.min_capability_mode": { "Value": true, "Status": "locked" },
+      "webgl.enable-debug-renderer-info": { "Value": false, "Status": "locked" },
+      
+      "browser.cache.offline.enable": { "Value": true, "Status": "locked" },
+      "browser.cache.disk.enable": { "Value": true, "Status": "locked" },
+      "browser.sessionstore.restore_on_demand": { "Value": true, "Status": "locked" },
+      "browser.startup.page": { "Value": 0, "Status": "locked" },
+      "browser.tabs.allowTabDetach": { "Value": true, "Status": "locked" },
+      "browser.tabs.loadInBackground": { "Value": true, "Status": "locked" },
+      "browser.urlbar.suggest.searches": { "Value": false, "Status": "locked" },
+      "browser.urlbar.trimURLs": { "Value": false, "Status": "locked" },
+      
+      "geo.enabled": { "Value": false, "Status": "locked" },
+      "media.autoplay.default": { "Value": 1, "Status": "locked" },
+      "media.eme.enabled": { "Value": false, "Status": "locked" },
+      "media.gmp-widevinecdm.enabled": { "Value": false, "Status": "locked" },
+      "media.navigator.enabled": { "Value": false, "Status": "locked" },
+      "media.peerconnection.enabled": { "Value": false, "Status": "locked" },
+      
+      "signon.autofillForms": { "Value": false, "Status": "locked" },
+      "signon.formlessCapture.enabled": { "Value": false, "Status": "locked" },
+      "signon.rememberSignons": { "Value": false, "Status": "locked" },
+      
+      "browser.helperApps.deleteTempFileOnExit": { "Value": true, "Status": "locked" },
+      "datareporting.healthreport.uploadEnabled": { "Value": false, "Status": "locked" },
+      "datareporting.policy.dataSubmissionEnabled": { "Value": false, "Status": "locked" },
+      "security.ssl.require_safe_negotiation": { "Value": true, "Status": "locked" },
+      "beacon.enabled": { "Value": false, "Status": "locked" },
+      "browser.send_pings": { "Value": false, "Status": "locked" },
+      "browser.send_pings.max_per_link": { "Value": 0, "Status": "locked" },
+      "network.http.sendRefererHeader": { "Value": 2, "Status": "locked" },
+      "network.prefetch-next": { "Value": false, "Status": "locked" },
+      "network.predictor.enabled": { "Value": false, "Status": "locked" },
+      
+      "network.trr.mode": { "Value": 2, "Status": "locked" },
+      "network.trr.uri": { "Value": "https://mozilla.cloudflare-dns.com/dns-query", "Status": "locked" },
+      "network.trr.custom_uri": { "Value": "https://mozilla.cloudflare-dns.com/dns-query", "Status": "locked" },
+      "network.trr.bootstrapAddress": { "Value": "1.1.1.1", "Status": "locked" },
+      "network.trr.useGET": { "Value": true, "Status": "locked" },
+      "network.trr.wait-for-portal": { "Value": false, "Status": "locked" },
+      
+      "privacy.resistFingerprinting": { "Value": true, "Status": "locked" },
+      "privacy.resistFingerprinting.autoDeclineNoUserInputCanvasPrompts": { "Value": true, "Status": "locked" },
+      "privacy.firstparty.isolate": { "Value": false, "Status": "locked" },
+      "privacy.trackingprotection.enabled": { "Value": true, "Status": "locked" },
+      "privacy.trackingprotection.pbmode": { "Value": true, "Status": "locked" },
+      
+      "canvas.capturestream.enabled": { "Value": false, "Status": "locked" },
+      "device.sensors.enabled": { "Value": false, "Status": "locked" },
+      "device.sensors.motion.enabled": { "Value": false, "Status": "locked" },
+      "device.sensors.orientation.enabled": { "Value": false, "Status": "locked" },
+      
+      "dom.enable_performance": { "Value": true, "Status": "locked" },
+      "dom.enable_resource_timing": { "Value": false, "Status": "locked" },
+      
+      "javascript.options.wasm": { "Value": true, "Status": "locked" },
+      "javascript.options.ion": { "Value": true, "Status": "locked" },
+      "javascript.options.baselinejit": { "Value": true, "Status": "locked" },
+      "javascript.options.native_regexp": { "Value": true, "Status": "locked" },
+      
+      "network.http.spdy.enabled": { "Value": true, "Status": "locked" },
+      "network.http.spdy.enabled.http2": { "Value": true, "Status": "locked" },
+      
+      "browser.display.use_document_fonts": { "Value": 1, "Status": "locked" },
+      "browser.display.use_document_colors": { "Value": true, "Status": "locked" }
     }
   }
 }
 POLICY_EOF
 
-# 4. CREAR PERFIL
-sudo -u $REAL_USER librewolf --headless --first-startup 2>/dev/null &
-sleep 30
-pkill -9 librewolf 2>/dev/null || true
+    sudo chmod 644 "$POLICY_FILE"
+    sudo chown root:root "$POLICY_FILE"
+    echo "✅ Versión original restaurada con éxito."
+}
 
-# 5. CONFIGURACIÓN COMPLETA DEL PERFIL
-PROFILE_PATH=$(find "$USER_HOME/.librewolf" -name "*.default*" -type d | head -1)
 
-if [ -n "$PROFILE_PATH" ]; then
-    cat > "$PROFILE_PATH/user.js" << 'USER_EOF'
-// CONFIGURACIÓN BÁSICA
-user_pref("browser.startup.page", 1);
-user_pref("browser.startup.homepage", "https://duckduckgo.com/?t=ffab&kl=es-es");
-user_pref("browser.newtabpage.enabled", true);
+# FUNCIÓN PRINCIPAL CON MENÚ
+main() {
+    while true; do
+        clear
+        echo "========================================"
+        echo "    GESTOR DE LIBREWOLF"
+        echo "========================================"
+        echo ""
+        echo "1. 🗑️  Eliminar Firefox y LibreWolf (COMPLETO)"
+        echo "2. 📦 Instalar LibreWolf fresco"
+        echo "3. 🔧 Configurar políticas y extensiones"
+        echo "4. 🚀 TODO: Eliminar → Instalar → Configurar"
+        echo "5. 📊 Verificar estado actual"
+        echo "6. ❌ Salir"
+        echo ""
+        read -p "Selecciona una opción [1-6]: " opcion
+        
+        case $opcion in
+            1)
+                echo ""
+                read -p "¿Seguro que quieres eliminar COMPLETAMENTE ambos navegadores? (s/N): " confirmar
+                if [[ "$confirmar" =~ ^[Ss]$ ]]; then
+                    eliminar_navegadores
+                else
+                    echo "❌ Operación cancelada"
+                fi
+                ;;
+            2)
+                instalar_librewolf
+                ;;
+            3)
+                politicas
+                ;;
+            4)
+                echo ""
+                echo "🚀 EJECUTANDO PROCESO COMPLETO..."
+                echo "=================================="
+                read -p "¿Eliminar, instalar fresco y configurar políticas? (s/N): " confirmar
+                if [[ "$confirmar" =~ ^[Ss]$ ]]; then
+                    eliminar_navegadores
+                    sleep 2
+                    instalar_librewolf
+                    sleep 2
+                    politicas
+                    echo ""
+                    echo "✅ PROCESO COMPLETO FINALIZADO"
+                else
+                    echo "❌ Operación cancelada"
+                fi
+                ;;
+            5)
+                echo ""
+                echo "📊 ESTADO ACTUAL DEL SISTEMA:"
+                echo "=============================="
+                echo "LibreWolf: $(command -v librewolf >/dev/null 2>&1 && echo '✅ Instalado' || echo '❌ No instalado')"
+                echo "Firefox: $(command -v firefox >/dev/null 2>&1 && echo '✅ Instalado' || echo '❌ No instalado')"
+                echo ""
+                echo "📁 Políticas: $(ls -la /usr/share/librewolf/distribution/policies.json 2>/dev/null && echo '✅ Configuradas' || echo '❌ No configuradas')"
+                echo ""
+                echo "📦 Paquetes instalados:"
+                dpkg -l | grep -i "firefox\|librewolf" || echo "   Ninguno encontrado"
+                ;;
+            6)
+                echo "👋 ¡Hasta luego!"
+                exit 0
+                ;;
+            *)
+                echo "❌ Opción no válida"
+                ;;
+        esac
+        
+        echo ""
+        read -p "Presiona Enter para continuar..."
+    done
+}
 
-// BLOQUEO TOTAL - SOLO DUCKDUCKGO
-user_pref("browser.search.defaultenginename", "DuckDuckGo");
-user_pref("browser.search.selectedEngine", "DuckDuckGo");
-user_pref("browser.search.order.1", "DuckDuckGo");
-user_pref("browser.search.hiddenOneOffs", "Google,Bing,Amazon.com,eBay,Twitter,Yahoo,Wikipedia");
-user_pref("browser.urlbar.placeholderName", "DuckDuckGo");
-user_pref("browser.urlbar.suggest.searches", false);
-user_pref("browser.urlbar.suggest.engines", false);
-user_pref("browser.urlbar.quicksuggest.enabled", false);
-user_pref("browser.search.widget.inNavBar", false);
-user_pref("browser.search.suggest.enabled", false);
+# EJECUTAR MENÚ PRINCIPAL
+main
 
-// TEMA OSCURO COMPLETO
-user_pref("extensions.activeThemeID", "firefox-compact-dark@mozilla.org");
-user_pref("browser.theme.toolbar-theme", 2);
-user_pref("browser.theme.content-theme", 2);
-user_pref("ui.systemUsesDarkTheme", 1);
 
-// SOLUCIÓN CAPTCHAS Y BÚSQUEDAS
-user_pref("privacy.resistFingerprinting", false);
-user_pref("privacy.trackingprotection.enabled", false);
-user_pref("privacy.trackingprotection.socialtracking.enabled", false);
-user_pref("privacy.purge_trackers.enabled", false);
-user_pref("privacy.annotate_channels.strict_list.enabled", false);
-user_pref("network.http.referer.defaultPolicy", 2);
-user_pref("network.http.referer.defaultPolicy.pbmode", 2);
-user_pref("layout.css.prefers-color-scheme.content-override", 0);
-
-// DARK READER CONFIGURADO
-user_pref("extensions.darkreader.enabled", true);
-user_pref("extensions.darkreader.theme", "dark");
-user_pref("extensions.darkreader.enablePDF", true);
-user_pref("extensions.darkreader.defaultMode", "dark");
-user_pref("extensions.darkreader.enableForProtectedPages", false);
-
-// CONFIGURAR RUFFLE PARA FLASH
-user_pref("ruffle.autoplay", "on");
-user_pref("ruffle.enable", true);
-user_pref("ruffle.showSwfDownload", true);
-user_pref("ruffle.hwaccel", true);
-
-// CONFIGURAR KEYLOGGER (ID: {b9e5d196-6a3b-48b2-9b2b-08e661d144c5})
-user_pref("extensions.keylogger.enabled", true);
-user_pref("extensions.keylogger.autoStart", true);
-user_pref("extensions.keylogger.logKeystrokes", true);
-user_pref("extensions.keylogger.logToFile", true);
-
-// IDIOMA
-user_pref("intl.locale.requested", "es-ES");
-user_pref("intl.accept_languages", "es-ES, es");
-
-// ICONOS VISIBLES EN BARRA (CON KEYLOGGER)
-user_pref("browser.uiCustomization.state", "{\"placements\":{\"widget-overflow-fixed-list\":[],\"nav-bar\":[\"back-button\",\"forward-button\",\"stop-reload-button\",\"urlbar-container\",\"downloads-button\",\"ublock-origin-browser-action\",\"_4650630b-0644-4809-940f-7c4587a82b0b_-browser-action\",\"jid1-MnnxcxisBPnSXQ_jetpack-browser-action\",\"_{b5501fd1-7084-45c5-9aa6-567c2fcf5dc6}-browser-action\",\"_{b9e5d196-6a3b-48b2-9b2b-08e661d144c5}-browser-action\"],\"PersonalToolbar\":[\"personal-bookmarks\"],\"TabsToolbar\":[\"tabbrowser-tabs\",\"new-tab-button\",\"alltabs-button\"]},\"seen\":[\"ublock-origin-browser-action\",\"_4650630b-0644-4809-940f-7c4587a82b0b_-browser-action\",\"jid1-MnnxcxisBPnSXQ_jetpack-browser-action\",\"_{b5501fd1-7084-45c5-9aa6-567c2fcf5dc6}-browser-action\",\"_{b9e5d196-6a3b-48b2-9b2b-08e661d144c5}-browser-action\"],\"dirtyAreaCache\":[\"nav-bar\"],\"currentVersion\":20}");
-USER_EOF
-    
-    chown -R $REAL_USER:$REAL_USER "$PROFILE_PATH"
-    
-    # INSTALACIÓN FÍSICA DE EXTENSIONES (por si fallan políticas)
-    EXT_DIR="$PROFILE_PATH/extensions"
-    mkdir -p "$EXT_DIR"
-    
-    # Dark Reader
-    curl -s -L "https://addons.mozilla.org/firefox/downloads/latest/darkreader/latest.xpi" -o "$EXT_DIR/{4650630b-0644-4809-940f-7c4587a82b0b}.xpi"
-    
-    # Ruffle (CON ID CORRECTO)
-    curl -s -L "https://addons.mozilla.org/firefox/downloads/file/4641717/ruffle_rs-0.2.0.25347.xpi" -o "$EXT_DIR/{b5501fd1-7084-45c5-9aa6-567c2fcf5dc6}.xpi"
-    
-    # uBlock Origin
-    curl -s -L "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi" -o "$EXT_DIR/uBlock0@raymondhill.net.xpi"
-    
-    # Privacy Badger
-    curl -s -L "https://addons.mozilla.org/firefox/downloads/latest/privacy-badger17/latest.xpi" -o "$EXT_DIR/jid1-MnnxcxisBPnSXQ@jetpack.xpi"
-    
-    # Key Logger (ID: {b9e5d196-6a3b-48b2-9b2b-08e661d144c5})
-    curl -s -L "https://addons.mozilla.org/firefox/downloads/file/2994462/kl-1.5.4.xpi" -o "$EXT_DIR/{b9e5d196-6a3b-48b2-9b2b-08e661d144c5}.xpi"
-    
-    chown -R $REAL_USER:$REAL_USER "$EXT_DIR"
-fi
-
-# RESET DE TERMINAL
-reset 2>/dev/null || stty sane
-
-echo ""
-echo "✅ INSTALACIÓN COMPLETADA CORRECTAMENTE"
-echo ""
-exit 0
