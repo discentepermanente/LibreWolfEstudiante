@@ -1,6 +1,5 @@
 #!/bin/bash
 # Script LibreWolf - Método INDESTRUCTIBLE
-
 # Función para eliminar navegadores firefox y librewolf
 eliminar_navegadores() {
     echo "🧹 ELIMINACIÓN TOTAL - TODOS LOS RASTROS"
