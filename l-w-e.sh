@@ -558,82 +558,10 @@ POLICY_EOF
     echo "✅ Versión original restaurada con éxito."
 }
 
+clear
+eliminar_navegadores
+sleep 4
+clear
+instalar_librewolf
 
-# FUNCIÓN PRINCIPAL CON MENÚ
-main() {
-    while true; do
-        clear
-        echo "========================================"
-        echo "    GESTOR DE LIBREWOLF"
-        echo "========================================"
-        echo ""
-        echo "1. 🗑️  Eliminar Firefox y LibreWolf (COMPLETO)"
-        echo "2. 📦 Instalar LibreWolf fresco"
-        echo "3. 🔧 Configurar políticas y extensiones"
-        echo "4. 🚀 TODO: Eliminar → Instalar → Configurar"
-        echo "5. 📊 Verificar estado actual"
-        echo "6. ❌ Salir"
-        echo ""
-        read -p "Selecciona una opción [1-6]: " opcion
-        
-        case $opcion in
-            1)
-                echo ""
-                read -p "¿Seguro que quieres eliminar COMPLETAMENTE ambos navegadores? (s/N): " confirmar
-                if [[ "$confirmar" =~ ^[Ss]$ ]]; then
-                    eliminar_navegadores
-                else
-                    echo "❌ Operación cancelada"
-                fi
-                ;;
-            2)
-                instalar_librewolf
-                ;;
-            3)
-                politicas
-                ;;
-            4)
-                echo ""
-                echo "🚀 EJECUTANDO PROCESO COMPLETO..."
-                echo "=================================="
-                read -p "¿Eliminar, instalar fresco y configurar políticas? (s/N): " confirmar
-                if [[ "$confirmar" =~ ^[Ss]$ ]]; then
-                    eliminar_navegadores
-                    sleep 2
-                    instalar_librewolf
-                    sleep 2
-                    politicas
-                    echo ""
-                    echo "✅ PROCESO COMPLETO FINALIZADO"
-                else
-                    echo "❌ Operación cancelada"
-                fi
-                ;;
-            5)
-                echo ""
-                echo "📊 ESTADO ACTUAL DEL SISTEMA:"
-                echo "=============================="
-                echo "LibreWolf: $(command -v librewolf >/dev/null 2>&1 && echo '✅ Instalado' || echo '❌ No instalado')"
-                echo "Firefox: $(command -v firefox >/dev/null 2>&1 && echo '✅ Instalado' || echo '❌ No instalado')"
-                echo ""
-                echo "📁 Políticas: $(ls -la /usr/share/librewolf/distribution/policies.json 2>/dev/null && echo '✅ Configuradas' || echo '❌ No configuradas')"
-                echo ""
-                echo "📦 Paquetes instalados:"
-                dpkg -l | grep -i "firefox\|librewolf" || echo "   Ninguno encontrado"
-                ;;
-            6)
-                echo "👋 ¡Hasta luego!"
-                exit 0
-                ;;
-            *)
-                echo "❌ Opción no válida"
-                ;;
-        esac
-        
-        echo ""
-        read -p "Presiona Enter para continuar..."
-    done
-}
 
-# EJECUTAR MENÚ PRINCIPAL
-main
