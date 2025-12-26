@@ -563,5 +563,8 @@ eliminar_navegadores
 sleep 4
 clear
 instalar_librewolf
+sleep 4
+clear
+politicas
 
 
