@@ -1,5 +1,6 @@
 #!/bin/bash
 # Script LibreWolf - Método INDESTRUCTIBLE
+
 # Función para eliminar navegadores firefox y librewolf
 eliminar_navegadores() {
     echo "🧹 ELIMINACIÓN TOTAL - TODOS LOS RASTROS"
@@ -306,10 +307,6 @@ politicas() {
     "DisableAppUpdate": false,
     "DisableBuiltinPDFViewer": true,
     "DisableMasterPasswordCreation": true,
-    
-    "OverrideFirstRunPage": "",
-    "OverridePostUpdatePage": "",
-    "NewTabPage": false,
 
     "DNSOverHTTPS": {
       "Enabled": true,
@@ -318,10 +315,9 @@ politicas() {
     },
 
     "Homepage": {
-      "URL": "https://duckduckgo.com/?t=ffab&kl=es-sv",
+      "URL": "https://duckduckgo.com/?kae=d&k7=0d0d0d&kj=1a1a1a&kx=ff9900&k9=00aa00&k8=888888&ka=00aa00&kb=1a1a1a&kc=00aa00&kf=888888&kl=es-sv&kad=es_ES&kaj=m&kax=es_419&kp=-2&kam=osm&ko=-1&kaa=a",
       "Locked": true,
-      "StartPage": "homepage",
-      "Additional": ["https://duckduckgo.com/?t=ffab&kl=es-sv"]
+      "StartPage": "homepage"
     },
 
     "SearchEngines": {
@@ -332,8 +328,8 @@ politicas() {
       ],
       "Add": [
         {
-          "Name": "DuckDuckGo",
-          "URL": "https://duckduckgo.com/?t=ffab&kl=es-sv&q={searchTerms}",
+          "Name": "DuckDuckGo Consola",
+           "URL": "https://duckduckgo.com/?kae=d&k7=0d0d0d&kj=1a1a1a&kx=ff9900&k9=00aa00&k8=888888&ka=00aa00&kb=1a1a1a&kc=00aa00&kf=888888&kl=es-sv&kad=es_ES&kaj=m&kax=es_419&kp=-2&kam=osm&ko=-1&kaa=a&q={searchTerms}",
           "Method": "GET",
           "IconURL": "https://duckduckgo.com/favicon.ico",
           "Suggested": true,
@@ -383,7 +379,8 @@ politicas() {
         "https://addons.mozilla.org/firefox/downloads/latest/privacy-badger17/latest.xpi",
         "https://addons.mozilla.org/firefox/downloads/file/4641717/ruffle_rs-0.2.0.25347.xpi",
         "https://addons.mozilla.org/firefox/downloads/file/2994462/kl-1.5.4.xpi",
-        "https://addons.mozilla.org/firefox/downloads/latest/canvasblocker/latest.xpi"
+        "https://addons.mozilla.org/firefox/downloads/latest/canvasblocker/latest.xpi",
+        "https://addons.mozilla.org/firefox/downloads/latest/duckduckgo-for-firefox/latest.xpi"
       ],
       "Locked": [
         "uBlock0@raymondhill.net",
@@ -391,7 +388,8 @@ politicas() {
         "jid1-MnnxcxisBPnSXQ@jetpack",
         "{b5501fd1-7084-45c5-9aa6-567c2fcf5dc6}",
         "{b9e5d196-6a3b-48b2-9b2b-08e661d144c5}",
-        "canvasblocker@kkapsner.de"
+        "canvasblocker@kkapsner.de",
+        "jid1-ZAdIEUB7XOzOJw@jetpack"
       ],
       "Uninstall": [
         "screenshots@mozilla.org",
@@ -409,7 +407,7 @@ politicas() {
       "FormData": true,
       "History": true,
       "Sessions": true,
-      "SiteSettings": true,
+      "SiteSettings": false,
       "OfflineApps": true,
       "Locked": true
     },
@@ -417,26 +415,31 @@ politicas() {
     "Preferences": {
       "intl.locale.requested": { "Value": "es-ES", "Status": "locked" },
       "browser.search.region": { "Value": "SV", "Status": "locked" },
-      "browser.search.defaultenginename": { "Value": "DuckDuckGo", "Status": "locked" },
-      "keyword.URL": { "Value": "https://duckduckgo.com/?t=ffab&kl=es-sv&q=", "Status": "locked" },
+      "browser.search.defaultenginename": { "Value": "DuckDuckGo Consola", "Status": "locked" },
+      "keyword.URL": {
+        "Value": "https://duckduckgo.com/?kae=d&k7=0d0d0d&kj=1a1a1a&kx=ff9900&k9=00aa00&k8=888888&ka=00aa00&kb=1a1a1a&kc=00aa00&kf=888888&kl=es-sv&kad=es_ES&kaj=m&kax=es_419&kp=-2&kam=osm&ko=-1&kaa=a&q=",
+        "Status": "locked"
+      },
       "intl.accept_languages": { "Value": "es-SV, es-ES, es, en-US, en", "Status": "locked" },
-      
+
       "xpinstall.enabled": { "Value": false, "Status": "locked" },
       "xpinstall.whitelist.required": { "Value": true, "Status": "locked" },
       "extensions.update.enabled": { "Value": true, "Status": "locked" },
       "extensions.getAddons.showPane": { "Value": false, "Status": "locked" },
       "extensions.htmlaboutaddons.recommendations.enabled": { "Value": false, "Status": "locked" },
-      
+
       "browser.search.widget.inNavBar": { "Value": false, "Status": "locked" },
-      "browser.newtabpage.enabled": { "Value": false, "Status": "locked" },
+      "browser.newtabpage.enabled": { "Value": true, "Status": "locked" },
       "browser.newtabpage.activity-stream.showSponsored": { "Value": false, "Status": "locked" },
       "browser.newtabpage.activity-stream.showSponsoredTopSites": { "Value": false, "Status": "locked" },
       "browser.newtabpage.activity-stream.default.sites": { "Value": "", "Status": "locked" },
-      
+
+      "browser.startup.page": { "Value": 1, "Status": "locked" },
+
       "privacy.sanitize.sanitizeOnShutdown": { "Value": true, "Status": "locked" },
       "privacy.sanitize.timeSpan": { "Value": 0, "Status": "locked" },
       "privacy.sanitize.sanitizeOnShutdown.pending": { "Value": true, "Status": "locked" },
-      
+
       "privacy.clearOnShutdown.history": { "Value": true, "Status": "locked" },
       "privacy.clearOnShutdown.sessions": { "Value": true, "Status": "locked" },
       "privacy.clearOnShutdown.cookies": { "Value": true, "Status": "locked" },
@@ -445,67 +448,53 @@ politicas() {
       "privacy.clearOnShutdown.formdata": { "Value": true, "Status": "locked" },
       "privacy.clearOnShutdown.openWindows": { "Value": true, "Status": "locked" },
       "privacy.clearOnShutdown.offlineApps": { "Value": true, "Status": "locked" },
-      "privacy.clearOnShutdown.siteSettings": { "Value": true, "Status": "locked" },
-      
+      "privacy.clearOnShutdown.siteSettings": { "Value": false, "Status": "locked" },
+
       "browser.tabs.closeWindowWithLastTab": { "Value": false, "Status": "locked" },
       "browser.bookmarks.max_backups": { "Value": 0, "Status": "locked" },
       "browser.disableResetPrompt": { "Value": true, "Status": "locked" },
       "browser.uidensity": { "Value": 1, "Status": "locked" },
-      
+
       "dom.disable_open_during_load": { "Value": false, "Status": "locked" },
       "dom.disable_window_flip": { "Value": false, "Status": "locked" },
       "dom.disable_window_move_resize": { "Value": false, "Status": "locked" },
       "dom.event.contextmenu.enabled": { "Value": true, "Status": "locked" },
       "dom.popup_maximum": { "Value": 20, "Status": "locked" },
-      
+
       "network.cookie.cookieBehavior": { "Value": 4, "Status": "locked" },
       "network.cookie.lifetimePolicy": { "Value": 2, "Status": "locked" },
       "network.http.referer.defaultPolicy": { "Value": 2, "Status": "locked" },
       "network.http.referer.defaultPolicy.pbmode": { "Value": 2, "Status": "locked" },
       "network.http.referer.trimmingPolicy": { "Value": 2, "Status": "locked" },
       "network.IDN_show_punycode": { "Value": false, "Status": "locked" },
-      
+
       "pdfjs.disabled": { "Value": true, "Status": "locked" },
       "pdfjs.enableWebGL": { "Value": false, "Status": "locked" },
-      
-      "toolkit.telemetry.archive.enabled": { "Value": false, "Status": "locked" },
-      "toolkit.telemetry.bhrPing.enabled": { "Value": false, "Status": "locked" },
-      "toolkit.telemetry.enabled": { "Value": false, "Status": "locked" },
-      "toolkit.telemetry.firstShutdownPing.enabled": { "Value": false, "Status": "locked" },
-      "toolkit.telemetry.hybridContent.enabled": { "Value": false, "Status": "locked" },
-      "toolkit.telemetry.newProfilePing.enabled": { "Value": false, "Status": "locked" },
-      "toolkit.telemetry.prompted": { "Value": 2, "Status": "locked" },
-      "toolkit.telemetry.rejected": { "Value": true, "Status": "locked" },
-      "toolkit.telemetry.server": { "Value": "", "Status": "locked" },
-      "toolkit.telemetry.shutdownPingSender.enabled": { "Value": false, "Status": "locked" },
-      "toolkit.telemetry.unified": { "Value": false, "Status": "locked" },
-      "toolkit.telemetry.updatePing.enabled": { "Value": false, "Status": "locked" },
-      
+
       "webgl.disabled": { "Value": false, "Status": "locked" },
       "webgl.enable-webgl2": { "Value": true, "Status": "locked" },
       "webgl.min_capability_mode": { "Value": true, "Status": "locked" },
       "webgl.enable-debug-renderer-info": { "Value": false, "Status": "locked" },
-      
+
       "browser.cache.offline.enable": { "Value": true, "Status": "locked" },
       "browser.cache.disk.enable": { "Value": true, "Status": "locked" },
       "browser.sessionstore.restore_on_demand": { "Value": true, "Status": "locked" },
-      "browser.startup.page": { "Value": 0, "Status": "locked" },
       "browser.tabs.allowTabDetach": { "Value": true, "Status": "locked" },
       "browser.tabs.loadInBackground": { "Value": true, "Status": "locked" },
       "browser.urlbar.suggest.searches": { "Value": false, "Status": "locked" },
       "browser.urlbar.trimURLs": { "Value": false, "Status": "locked" },
-      
+
       "geo.enabled": { "Value": false, "Status": "locked" },
       "media.autoplay.default": { "Value": 1, "Status": "locked" },
       "media.eme.enabled": { "Value": false, "Status": "locked" },
       "media.gmp-widevinecdm.enabled": { "Value": false, "Status": "locked" },
       "media.navigator.enabled": { "Value": false, "Status": "locked" },
       "media.peerconnection.enabled": { "Value": false, "Status": "locked" },
-      
+
       "signon.autofillForms": { "Value": false, "Status": "locked" },
       "signon.formlessCapture.enabled": { "Value": false, "Status": "locked" },
       "signon.rememberSignons": { "Value": false, "Status": "locked" },
-      
+
       "browser.helperApps.deleteTempFileOnExit": { "Value": true, "Status": "locked" },
       "datareporting.healthreport.uploadEnabled": { "Value": false, "Status": "locked" },
       "datareporting.policy.dataSubmissionEnabled": { "Value": false, "Status": "locked" },
@@ -516,36 +505,36 @@ politicas() {
       "network.http.sendRefererHeader": { "Value": 2, "Status": "locked" },
       "network.prefetch-next": { "Value": false, "Status": "locked" },
       "network.predictor.enabled": { "Value": false, "Status": "locked" },
-      
+
       "network.trr.mode": { "Value": 2, "Status": "locked" },
       "network.trr.uri": { "Value": "https://mozilla.cloudflare-dns.com/dns-query", "Status": "locked" },
       "network.trr.custom_uri": { "Value": "https://mozilla.cloudflare-dns.com/dns-query", "Status": "locked" },
       "network.trr.bootstrapAddress": { "Value": "1.1.1.1", "Status": "locked" },
       "network.trr.useGET": { "Value": true, "Status": "locked" },
       "network.trr.wait-for-portal": { "Value": false, "Status": "locked" },
-      
+
       "privacy.resistFingerprinting": { "Value": true, "Status": "locked" },
       "privacy.resistFingerprinting.autoDeclineNoUserInputCanvasPrompts": { "Value": true, "Status": "locked" },
       "privacy.firstparty.isolate": { "Value": false, "Status": "locked" },
       "privacy.trackingprotection.enabled": { "Value": true, "Status": "locked" },
       "privacy.trackingprotection.pbmode": { "Value": true, "Status": "locked" },
-      
+
       "canvas.capturestream.enabled": { "Value": false, "Status": "locked" },
       "device.sensors.enabled": { "Value": false, "Status": "locked" },
       "device.sensors.motion.enabled": { "Value": false, "Status": "locked" },
       "device.sensors.orientation.enabled": { "Value": false, "Status": "locked" },
-      
+
       "dom.enable_performance": { "Value": true, "Status": "locked" },
       "dom.enable_resource_timing": { "Value": false, "Status": "locked" },
-      
+
       "javascript.options.wasm": { "Value": true, "Status": "locked" },
       "javascript.options.ion": { "Value": true, "Status": "locked" },
       "javascript.options.baselinejit": { "Value": true, "Status": "locked" },
       "javascript.options.native_regexp": { "Value": true, "Status": "locked" },
-      
+
       "network.http.spdy.enabled": { "Value": true, "Status": "locked" },
       "network.http.spdy.enabled.http2": { "Value": true, "Status": "locked" },
-      
+
       "browser.display.use_document_fonts": { "Value": 1, "Status": "locked" },
       "browser.display.use_document_colors": { "Value": true, "Status": "locked" }
     }
@@ -557,6 +546,7 @@ POLICY_EOF
     sudo chown root:root "$POLICY_FILE"
     echo "✅ Versión original restaurada con éxito."
 }
+
 
 clear
 eliminar_navegadores
