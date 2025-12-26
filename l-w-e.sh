@@ -1,4 +1,3 @@
-
 #!/bin/bash
 # Script LibreWolf - Método INDESTRUCTIBLE
 
@@ -639,5 +638,3 @@ main() {
 
 # EJECUTAR MENÚ PRINCIPAL
 main
-
-
