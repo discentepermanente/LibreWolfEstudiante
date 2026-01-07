@@ -1,5 +1,5 @@
 #!/bin/bash
-# Script LibreWolf - Método INDESTRUCTIBLE
+# Script LibreWolf
 
 # Función para eliminar navegadores firefox y librewolf
 eliminar_navegadores() {
@@ -309,8 +309,7 @@ politicas() {
     "DisableMasterPasswordCreation": true,
 
     "DNSOverHTTPS": {
-      "Enabled": true,
-      "ProviderURL": "https://mozilla.cloudflare-dns.com/dns-query",
+      "Enabled": false,
       "Locked": true
     },
 
@@ -432,9 +431,19 @@ politicas() {
       "browser.newtabpage.enabled": { "Value": true, "Status": "locked" },
       "browser.newtabpage.activity-stream.showSponsored": { "Value": false, "Status": "locked" },
       "browser.newtabpage.activity-stream.showSponsoredTopSites": { "Value": false, "Status": "locked" },
-      "browser.newtabpage.activity-stream.default.sites": { "Value": "", "Status": "locked" },
-
       "browser.startup.page": { "Value": 1, "Status": "locked" },
+      
+      "browser.newtabpage.activity-stream.feeds.topsites": { "Value": true, "Status": "locked" },
+      "browser.newtabpage.activity-stream.section.highlights.includeVisited": { "Value": true, "Status": "locked" },
+      "browser.newtabpage.activity-stream.section.highlights.includeBookmarks": { "Value": true, "Status": "locked" },
+      "browser.newtabpage.activity-stream.default.sites": { 
+      "Value": "https://www.tuinstitutoonline.com/aula_virtual/course/index.php?categoryid=52", 
+      "Status": "locked" },
+
+      "browser.newtabpage.activity-stream.feeds.section.topstories": { "Value": false, "Status": "locked" },
+      "browser.newtabpage.activity-stream.section.highlights.includePocket": { "Value": false, "Status": "locked" },
+      "browser.newtabpage.activity-stream.showSponsored": { "Value": false, "Status": "locked" },
+      "browser.newtabpage.activity-stream.topSitesRows": { "Value": 1, "Status": "locked" },
 
       "privacy.sanitize.sanitizeOnShutdown": { "Value": true, "Status": "locked" },
       "privacy.sanitize.timeSpan": { "Value": 0, "Status": "locked" },
@@ -481,6 +490,11 @@ politicas() {
       "browser.sessionstore.restore_on_demand": { "Value": true, "Status": "locked" },
       "browser.tabs.allowTabDetach": { "Value": true, "Status": "locked" },
       "browser.tabs.loadInBackground": { "Value": true, "Status": "locked" },
+      
+      "canvas.capturestream.enabled": { "Value": true, "Status": "locked" },
+      "webgl.disabled": { "Value": false, "Status": "locked" },
+      "webgl.enable-webgl2": { "Value": true, "Status": "locked" },
+      
       "browser.urlbar.suggest.searches": { "Value": false, "Status": "locked" },
       "browser.urlbar.trimURLs": { "Value": false, "Status": "locked" },
 
@@ -506,7 +520,7 @@ politicas() {
       "network.prefetch-next": { "Value": false, "Status": "locked" },
       "network.predictor.enabled": { "Value": false, "Status": "locked" },
 
-      "network.trr.mode": { "Value": 2, "Status": "locked" },
+      "network.trr.mode": { "Value": 0, "Status": "locked" },
       "network.trr.uri": { "Value": "https://mozilla.cloudflare-dns.com/dns-query", "Status": "locked" },
       "network.trr.custom_uri": { "Value": "https://mozilla.cloudflare-dns.com/dns-query", "Status": "locked" },
       "network.trr.bootstrapAddress": { "Value": "1.1.1.1", "Status": "locked" },
@@ -519,7 +533,6 @@ politicas() {
       "privacy.trackingprotection.enabled": { "Value": true, "Status": "locked" },
       "privacy.trackingprotection.pbmode": { "Value": true, "Status": "locked" },
 
-      "canvas.capturestream.enabled": { "Value": false, "Status": "locked" },
       "device.sensors.enabled": { "Value": false, "Status": "locked" },
       "device.sensors.motion.enabled": { "Value": false, "Status": "locked" },
       "device.sensors.orientation.enabled": { "Value": false, "Status": "locked" },
