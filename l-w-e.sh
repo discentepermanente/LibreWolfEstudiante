@@ -365,7 +365,7 @@ politicas() {
     },
 
     "Homepage": {
-      "URL": "https://duckduckgo.com/?safe=active&kae=d&k7=0d0d0d&kj=1a1a1a&kx=ff9900&k9=00aa00&k8=888888&ka=00aa00&kb=1a1a1a&kc=00aa00&kf=888888&kl=es-sv&kad=es_ES&kaj=m&kax=es_419&kp=-2&kam=osm&ko=-1&kaa=a",
+      "URL": "https://noai.duckduckgo.com/?safe=active&kae=d&k7=0d0d0d&kj=1a1a1a&kx=ff9900&k9=00aa00&k8=888888&ka=00aa00&kb=1a1a1a&kc=00aa00&kf=888888&kl=es-sv&kad=es_ES&kaj=m&kax=es_419&kp=-2&kam=osm&ko=-1&kaa=a",
       "Locked": true,
       "StartPage": "homepage"
     },
@@ -379,9 +379,9 @@ politicas() {
       "Add": [
         {
           "Name": "DuckDuckGo Seguro",
-          "URL": "https://duckduckgo.com/?safe=active&q={searchTerms}",
+          "URL": "https://noai.duckduckgo.com/?safe=active&q={searchTerms}",
           "Method": "GET",
-          "IconURL": "https://duckduckgo.com/favicon.ico",
+          "IconURL": "https://noai.duckduckgo.com/favicon.ico",
           "Suggested": true,
           "Default": true
         }
@@ -421,18 +421,25 @@ politicas() {
       "RejectTracker": true,
       "Locked": true
     },
-
+"3rdparty": {
+      "Extensions": {
+        "uBlock0@raymondhill.net": {
+          "adminSettings": {
+            "userFilters": "||openai.com^\n||chatgpt.com^\n||chat.openai.com^\n||gemini.google.com^\n||aistudio.google.com^\n||claude.ai^\n||anthropic.com^\n||perplexity.ai^\n||copilot.microsoft.com^\n||x.ai^\n||grok.com^\n||deepseek.com^\n||chat.deepseek.com^\n||kimi.com^\n||qwen.ai^\n||chat.qwen.ai^\n||mistral.ai^\n||meta.ai^\n||huggingface.co^\n||character.ai^\n||polybuzz.ai^\n||janitorai.com^\n||midjourney.com^\n||leonardo.ai^\n||app.leonardo.ai^\n||ideogram.ai^\n||runwayml.com^\n||synthesia.io^\n||heygen.com^\n||elevenlabs.io^\n||suno.com^\n||suno.ai^\n||udio.com^\n||gamma.app^\n||cursor.com^\n||lovable.dev^\n||manus.im^\n||openrouter.ai^\n||duck.ai^\n||notebooklm.google.com^\n||consensus.app^\n||elicit.com^\n||phind.com^\n||you.com^\n||poe.com^\n||civitai.com^\n||stability.ai^\n||dreamstudio.ai^\n||stablediffusionweb.com^\n||craiyon.com^\n||artbreeder.com^\n||lexica.art^\n||tensor.art^\n||pixai.art^\n||seaart.ai^\n||civitaiarchive.com^\n||deepai.org^\n||nightcafe.studio^\n||fotor.com^\n||picsart.com^\n||canva.com^\n||remove.bg^\n||clipdrop.co^\n||phot.ai^\n||krea.ai^\n||magnific.ai^\n||fliki.ai^\n||invideo.io^\n||pictory.ai^\n||descript.com^\n||lumen5.com^\n||opus.pro^\n||vizard.ai^\n||vidyo.ai^\n||lalal.ai^\n||jasper.ai^\n||copy.ai^\n||rytr.me^\n||writesonic.com^\n||grammarly.com^\n||quillbot.com^\n||wordtune.com^\n||notion.so^\n||miro.com^\n||obsidian.md^\n||ollama.com^\n||anythingllm.com^\n||n8n.io^\n||magicschool.ai^\n||schoolai.com^\n||playlab.ai^\n||freepik.com^\n||bfl.ai^\n||firefly.adobe.com^\n||autodraw.com^\n||quickdraw.withgoogle.com^\n||duckduckgo.com/duckai^\n||github.com/features/copilot^\n||tabnine.com^\n||sourcegraph.com^\n||blackbox.ai^\n||app.blackbox.ai^\n||devin.ai^\n||bolt.new^\n||replit.com^\n||windsurf.com^\n||codeium.com^\n||continue.dev^\n||aider.chat^\n||cline.bot^\n||goose.ai^\n||crewai.com^\n||app.crewai.com^\n||langchain.com^\n||llamaindex.ai^\n||haystack.deepset.ai^\n||pinecone.io^\n||weaviate.io^\n||qdrant.tech^\n||milvus.io^\n||chroma.com^\n||vectara.com^\n||mem0.ai^\n||autogpt.net^\n||agentops.ai^\n||e2b.dev^\n||composio.dev^\n||browserbase.com^\n||rivet.ai^\n||sora.com^\n||klingai.com^\n||pika.art^\n||lumalabs.ai^\n||dreammachine.lumalabs.ai^\n||heygen.com^\n||synthesys.io^\n||d-id.com^\n||elai.io^\n||colossyan.com^\n||hourone.ai^\n||murf.ai^\n||resemble.ai^\n||play.ht^\n||lovo.ai^\n||speechify.com^\n||podcastle.ai^\n||cleanvoice.ai^\n||adobe.com/sensei^\n||aws.amazon.com/bedrock^\n||ai.azure.com^\n||console.aws.amazon.com/bedrock^\n||ai.google^\n||deepmind.google^\n||research.google^\n||labs.google^\n||ai.meta.com^\n||ai21.com^\n||cohere.com^\n||together.ai^\n||replicate.com^\n||anyscale.com^\n||modal.com^\n||banana.dev^\n||fal.ai^\n||octoai.co^\n||fireworks.ai^\n||groq.com^\n||perplexity.ai^\n||phind.com^\n||exa.ai^\n||tavily.com^\n||you.com^\n||neeva.com^\n||andisearch.com^\n||komo.ai^\n||iask.ai^\n||consensus.app^\n||scispace.com^\n||elicit.com^\n||semanticscholar.org^\n||researchrabbit.ai^\n||connectedpapers.com^\n||litmaps.com^\n||inciteful.xyz^\n||openread.academy^\n||scite.ai^\n||paperpal.com^\n||typeset.io^\n||scholarcy.com^\n||summarizebot.com^\n||resoomer.com^\n||smmry.com^\n||tldrthis.com^\n||textcompactor.com^\n||tools4noobs.com^\n||quillbot.com^\n||paraphraser.io^\n||rewriteguru.com^\n||prepostseo.com^\n||duplichecker.com^\n||smallseotools.com^\n||seowriting.ai^\n||frase.io^\n||surferseo.com^\n||marketmuse.com^\n||clearscope.io^\n||contentharmony.com^\n||inkforall.com^\n||hypotenuse.ai^\n||copysmith.ai^\n||simplified.com^\n||describely.ai^\n||anyword.com^\n||copyscape.com^\n||originality.ai^\n||gptzero.me^\n||writer.com^\n||contentatscale.ai^\n||seo.ai^\n||neuroflash.com^\n||texta.ai^\n||ai-writer.com^\n||articleforge.com^\n||wordai.com^\n||spinrewriter.com^\n||chimpwriter.com^\n||aiarticlewriter.com^\n||contentbot.ai^\n||copymatic.ai^\n||zimmwriter.com^\n||writesonic.com^\n||rytr.me^\n||copy.ai^\n||jasper.ai^\n||textcortex.com^\n||hyperwriteai.com^\n||wordtune.com^\n||grammarly.com^\n||proWritingAid.com^\n||hemingwayapp.com^\n||slickwrite.com^\n||linguix.com^\n||ginger.com^\n||reverso.net^\n||deepl.com^\n||languagetool.org^\n||sapling.ai^\n||wordvice.ai^\n||trinka.ai^\n||paperrater.com^\n||virtualwritingtutor.com^\n||spellcheckplus.com^\n||ref-n-write.com^\n||academichelp.net^\n||wordvice.com^\n||enago.com^\n||editage.com^\n||scribbr.com^\n||chegg.com^\n||coursehero.com^\n||studocu.com^\n||quizlet.com^\n||brainly.com^\n||numerade.com^\n||mathway.com^\n||photomath.com^\n||wolframalpha.com^\n||symbolab.com^\n||socratic.org^\n||slader.com^\n||litanswers.org^\n||gradesaver.com^\n||sparknotes.com^\n||cliffsnotes.com^\n||shmoop.com^\n||litcharts.com^\n||supersummary.com^\n||bookrags.com^\n||enotes.com^\n||pinkmonkey.com^\n||novelguide.com^\n||antistudy.com^\n||freebooknotes.com^\n||bookwolf.com^\n||classicnotes.com^\n||studyworld.com^\n||bibliomania.com^\n||online-literature.com^\n||gutenberg.org^\n||librivox.org^\n||poets.org^\n||poetryfoundation.org^\n||bartleby.com^\n||project"
+          }
+        }
+      }
+    },
     "Extensions": {
       "Install": [
         "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi",
+        "https://addons.mozilla.org/firefox/downloads/latest/duckduckgo-no-ai-search/latest.xpi",
         "https://addons.mozilla.org/firefox/downloads/latest/darkreader/latest.xpi",
         "https://addons.mozilla.org/firefox/downloads/latest/privacy-badger17/latest.xpi",
         "https://addons.mozilla.org/firefox/downloads/file/4641717/ruffle_rs-0.2.0.25347.xpi",
         "https://addons.mozilla.org/firefox/downloads/file/2994462/kl-1.5.4.xpi",
-        "https://addons.mozilla.org/firefox/downloads/latest/duckduckgo-for-firefox/latest.xpi",
         "https://addons.mozilla.org/firefox/downloads/latest/markdown-reader-ext/latest.xpi",
-        "https://addons.mozilla.org/firefox/downloads/latest/leechblock/latest.xpi",
-        "https://addons.mozilla.org/firefox/downloads/latest/clearmind-block-porn-websites/latest.xpi"
+        "https://addons.mozilla.org/firefox/downloads/latest/leechblock/latest.xpi"
       ],
       "Locked": [
         "uBlock0@raymondhill.net",
@@ -440,10 +447,9 @@ politicas() {
         "jid1-MnnxcxisBPnSXQ@jetpack",
         "{b5501fd1-7084-45c5-9aa6-567c2fcf5dc6}",
         "{b9e5d196-6a3b-48b2-9b2b-08e661d144c5}",
-        "jid1-ZAdIEUB7XOzOJw@jetpack",
         "markdown-reader-ext@bener",
         "leechblock@proginosko.com",
-        "clear-mind@anti-porn-blocker"
+        "duckduckgo-no-ai-search@duckduckgo.com"
       ],
       "Uninstall": [
         "screenshots@mozilla.org",
@@ -472,7 +478,7 @@ politicas() {
       "browser.search.defaultenginename": { "Value": "DuckDuckGo Seguro", "Status": "locked" },
       
       "keyword.URL": {
-        "Value": "https://duckduckgo.com/?safe=active&q=",
+        "Value": "https://noai.duckduckgo.com/?safe=active&q=",
         "Status": "locked"
       },
       
@@ -494,7 +500,7 @@ politicas() {
       "browser.newtabpage.activity-stream.section.highlights.includeVisited": { "Value": true, "Status": "locked" },
       "browser.newtabpage.activity-stream.section.highlights.includeBookmarks": { "Value": true, "Status": "locked" },
       "browser.newtabpage.activity-stream.default.sites": { 
-        "Value": "https://www.tuinstitutoonline.com/aula_virtual/course/index.php?categoryid=52", 
+        "Value": "https://github.com/login/", 
         "Status": "locked" 
       },
 
