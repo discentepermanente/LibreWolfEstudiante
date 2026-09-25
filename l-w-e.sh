@@ -342,7 +342,7 @@ politicas() {
     "DisableFirefoxAccounts": true,
     "DisableFormHistory": true,
     "DisableSafeMode": true,
-    "DisablePrivateBrowsing": false,
+    "DisablePrivateBrowsing": true,
 
     "DisableDeveloperTools": false,
     "DisableFirefoxScreenshots": true,
